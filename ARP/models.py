@@ -46,7 +46,7 @@ class ARPUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['user_type', 'phone',
-                       'email', 'machine_status']
+                       'machine_status']
     is_active = models.BooleanField(
         verbose_name='Active',
         default=True,
@@ -63,7 +63,19 @@ class ARPUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_name(self):
-        return self.name
+        return self.username
 
     class Meta:
         verbose_name_plural = "ARP users"
+
+
+class Infection(models.Model):
+    victim_mac = models.CharField(max_length=100, verbose_name="MAC Address(Victim)")
+    victim_ip = models.CharField(max_length=100, verbose_name="IP Address(Victim)")
+    pretend_mac = models.CharField(max_length=100, verbose_name="MAC Address(Pretend)")
+    pretend_ip = models.CharField(max_length=100, verbose_name="IP Address(Pretend)")
+    victim_employee = models.ForeignKey(ARPUser, on_delete=models.SET_NULL, null=True, verbose_name="Victim")
+    timestamp = models.DateTimeField(verbose_name="Date/Time of Infection")
+
+    def __str__(self):
+        return self.victim_employee.username + ' Infection'
