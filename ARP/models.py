@@ -35,6 +35,7 @@ class ARPUser(AbstractBaseUser, PermissionsMixin):
     )
 
     username = models.CharField(max_length=50, unique=True)
+    employee_id = models.CharField(max_length=50, unique=True, null=True)
     user_type = models.CharField(
         max_length=3, choices=USER_TYPE, default='EMP', verbose_name='User Type')
     email = models.EmailField(

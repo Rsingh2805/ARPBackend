@@ -9,6 +9,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = ARPUser
         fields = [
             'username',
+            'employee_id',
             'email',
             'phone',
             'machine_status',
@@ -20,6 +21,7 @@ class ARPUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = ARPUser
         fields = [
+            'employee_id',
             'username',
             'email',
             'phone',
@@ -65,9 +67,7 @@ class UserInfectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ARPUser
         fields = [
-            'username',
-            'email',
-            'machine_status',
+            'employee_id',
             'infections',
         ]
 
