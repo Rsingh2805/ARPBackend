@@ -80,3 +80,15 @@ class Infection(models.Model):
 
     def __str__(self):
         return self.victim_employee.username + ' Infection'
+
+
+class Message(models.Model):
+    MESSAGE_TYPE = (
+        ('INF', 'Infection'),
+        ('FIX', 'Fixed')
+    )
+    message_type = models.CharField(choices=MESSAGE_TYPE, max_length=3)
+    victim_id = models.ForeignKey(ARPUser, on_delete=models.SET_NULL, null=True, related_name="messages")
+    timestamp = models.DateTimeField(verbose_name="Date/Time")
+
+

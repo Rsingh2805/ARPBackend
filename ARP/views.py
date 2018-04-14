@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status, generics, parsers, renderers
 from .models import (
-    ARPUser, Infection
+    ARPUser, Infection, Message,
 )
 from .serializers import (
     UserCreateSerializer,
@@ -16,8 +16,9 @@ from .serializers import (
     InfectionSerializer,
     UserProfileSerializer,
     UserInfectionSerializer,
+    MessageSerializer,
 )
-
+from django.utils import timezone
 
 # Create your views here.
 class NewUser(APIView):
@@ -71,6 +72,11 @@ class SubmitInfectionData(APIView):
         if serializer.is_valid():
             infection = serializer.save()
             infection.save()
+            user = get_object_or_404(ARPUser, pk=request.data['victim_employee'])
+            user.machine_status = 'INF'
+            user.save()
+            message = Message.objects.create(message_type='INF', victim_id=get_object_or_404(ARPUser, pk=request.data['victim_employee']), timestamp=request.data['timestamp'])
+            message.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         errors = serializer.errors
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
@@ -96,3 +102,24 @@ class GetUserProfile(APIView):
         serializer = UserProfileSerializer(current_user, many=False)
         return Response(serializer.data)
 
+    @staticmethod
+    def post(request):
+        if request.user is None or request.user.user_type != 'ADM':
+            return Response({"error": "You are not authorized to view this page"}, status=status.HTTP_401_UNAUTHORIZED)
+        user = get_object_or_404(ARPUser, employee_id=request.data['employee_id'])
+        serializer = UserProfileSerializer(user, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BreachFixed(APIView):
+
+    @staticmethod
+    def post(request):
+        if request.user is None or request.user.user_type != 'ADM':
+            return Response({"error": "You are not authorized to view this page"}, status=status.HTTP_401_UNAUTHORIZED)
+        message = Message.objects.create(message_type='FIX', victim_id=request.data['victim_id'], timestamp=timezone.now())
+        message.save()
+        user = ARPUser.objects.get(pk=request.data['victim_id'])
+        user.machine_status = 'SAF'
+        user.save()
+        return Response(MessageSerializer(message, many=False).data, status=status.HTTP_201_CREATED)

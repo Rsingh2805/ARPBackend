@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ARPUser, Infection
+from .models import ARPUser, Infection, Message
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -51,7 +51,7 @@ class AuthTokenSerializer(serializers.Serializer):
 class InfectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Infection
-        fields = '__all__'
+        exclude = ('id',)
 
 
 class UserInfectionSerializer(serializers.ModelSerializer):
@@ -72,13 +72,28 @@ class UserInfectionSerializer(serializers.ModelSerializer):
         ]
 
 
+class MessageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
+        exclude = ('id',)
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     infections = serializers.SerializerMethodField()
+    messages = serializers.SerializerMethodField()
 
     def get_infections(self, obj):
         infections = Infection.objects.filter(victim_employee=obj)
         if infections.exists():
             return InfectionSerializer(infections, many=True).data
+        else:
+            return []
+
+    def get_messages(self, obj):
+        messages = Message.objects.filter(victim_id=obj)
+        if messages.exists():
+            return MessageSerializer(messages, many=True).data
         else:
             return []
 
@@ -90,4 +105,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'phone',
             'machine_status',
             'infections',
+            'messages',
         ]
+
