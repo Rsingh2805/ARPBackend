@@ -14,6 +14,8 @@ from .serializers import (
     ARPUserSerializer,
     AuthTokenSerializer,
     InfectionSerializer,
+    UserProfileSerializer,
+    UserInfectionSerializer,
 )
 
 
@@ -73,4 +75,24 @@ class SubmitInfectionData(APIView):
         errors = serializer.errors
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class GetInfectionHistory(APIView):
+    @staticmethod
+    def get(request):
+        current_user = request.user
+        if current_user.user_type == 'ADM':
+            users = ARPUser.objects.all()
+            serializer = UserInfectionSerializer(users, many=True)
+        else:
+            user = current_user
+            serializer = UserInfectionSerializer(user, many=False)
+        return Response(serializer.data)
+
+
+class GetUserProfile(APIView):
+    @staticmethod
+    def get(request):
+        current_user = request.user
+        serializer = UserProfileSerializer(current_user, many=False)
+        return Response(serializer.data)
 

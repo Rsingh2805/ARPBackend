@@ -31,16 +31,16 @@ class ARPUser(AbstractBaseUser, PermissionsMixin):
     )
     MACHINE_STATUS = (
         ('INF', 'Infected'),
-        ('NOT', 'Not Infected'),
+        ('SAF', 'Safe'),
     )
 
-    username = models.CharField(max_length=50,unique=True)
+    username = models.CharField(max_length=50, unique=True)
     user_type = models.CharField(
         max_length=3, choices=USER_TYPE, default='EMP', verbose_name='User Type')
     email = models.EmailField(
         verbose_name='Email Address', max_length=255, unique=True, db_index=True)
     phone = models.CharField(max_length=10, verbose_name="Contact Number")
-    machine_status = models.CharField(max_length=3, choices=MACHINE_STATUS, default='NOT', verbose_name='PC Status')
+    machine_status = models.CharField(max_length=3, choices=MACHINE_STATUS, default='SAF', verbose_name='PC Status')
 
     objects = ARPUserManager()
     USERNAME_FIELD = 'username'
@@ -74,7 +74,7 @@ class Infection(models.Model):
     victim_ip = models.CharField(max_length=100, verbose_name="IP Address(Victim)")
     pretend_mac = models.CharField(max_length=100, verbose_name="MAC Address(Pretend)")
     pretend_ip = models.CharField(max_length=100, verbose_name="IP Address(Pretend)")
-    victim_employee = models.ForeignKey(ARPUser, on_delete=models.SET_NULL, null=True, verbose_name="Victim")
+    victim_employee = models.ForeignKey(ARPUser, on_delete=models.SET_NULL, null=True, verbose_name="Victim", related_name="infections")
     timestamp = models.DateTimeField(verbose_name="Date/Time of Infection")
 
     def __str__(self):

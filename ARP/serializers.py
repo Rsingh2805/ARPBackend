@@ -11,6 +11,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'username',
             'email',
             'phone',
+            'machine_status',
         ]
 
 
@@ -51,5 +52,42 @@ class InfectionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class UserInfectionSerializer(serializers.ModelSerializer):
+    infections = serializers.SerializerMethodField()
+
+    def get_infections(self, obj):
+        infections = Infection.objects.filter(victim_employee=obj)
+        if infections.exists():
+            return InfectionSerializer(infections, many=True).data
+        else:
+            return []
+
+    class Meta:
+        model = ARPUser
+        fields = [
+            'username',
+            'email',
+            'machine_status',
+            'infections',
+        ]
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    infections = serializers.SerializerMethodField()
+
+    def get_infections(self, obj):
+        infections = Infection.objects.filter(victim_employee=obj)
+        if infections.exists():
+            return InfectionSerializer(infections, many=True).data
+        else:
+            return []
+
+    class Meta:
+        model = ARPUser
+        fields = [
+            'username',
+            'email',
+            'phone',
+            'machine_status',
+            'infections',
+        ]

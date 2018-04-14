@@ -6,4 +6,5 @@ urlpatterns = [
     url('login$', views.Login.as_view()),
     url('logout$', views.Logout.as_view()),
     url('infection/submit$', views.SubmitInfectionData.as_view()),
+    url('infection/history$', views.GetInfectionHistory.as_view()),
 ]
