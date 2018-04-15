@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
@@ -5,18 +7,18 @@ from django.contrib.auth.models import PermissionsMixin
 
 # Create your models here.
 class ARPUserManager(BaseUserManager):
-    def create_user(self, email, password, **extra_fields):
-        if not email:
-            raise ValueError('Enter email')
+    def create_user(self, username, password, **extra_fields):
+        if not username:
+            raise ValueError('Enter username')
 
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        # email = self.normalize_email(email)
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
-        user = self.create_user(email, password, **extra_fields)
+    def create_superuser(self, username, password, **extra_fields):
+        user = self.create_user(username, password, **extra_fields)
         user.is_superuser = True
         user.is_active = True
         user.is_staff = True
@@ -46,7 +48,7 @@ class ARPUser(AbstractBaseUser, PermissionsMixin):
     objects = ARPUserManager()
     USERNAME_FIELD = 'username'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['user_type', 'phone',
+    REQUIRED_FIELDS = ['user_type', 'phone', 'email',
                        'machine_status']
     is_active = models.BooleanField(
         verbose_name='Active',
