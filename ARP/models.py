@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+from django.utils import timezone
 
 
 # Create your models here.
@@ -91,6 +92,6 @@ class Message(models.Model):
     )
     message_type = models.CharField(choices=MESSAGE_TYPE, max_length=3)
     victim_id = models.ForeignKey(ARPUser, on_delete=models.SET_NULL, null=True, related_name="messages")
-    timestamp = models.DateTimeField(verbose_name="Date/Time")
+    timestamp = models.DateTimeField(verbose_name="Date/Time", default=timezone.now)
 
 

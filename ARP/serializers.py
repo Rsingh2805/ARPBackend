@@ -13,6 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'email',
             'phone',
             'machine_status',
+            'password',
         ]
 
 
